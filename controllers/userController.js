@@ -20,12 +20,9 @@ exports.signup = function (req, res) {
         req.body.password = hash;
         db.createNewUser(req.body).then(function (createRes) {
             if (createRes) {
-                return res.json({
-                    success: true,
-                    msg: 'Successful created new user.'
-                });
+                return res.json();
             } else {
-                return res.json({
+                return res.status(500).json({
                     success: false,
                     msg: 'Username already exists.'
                 });

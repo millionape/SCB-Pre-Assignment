@@ -1,0 +1,252 @@
+swagger: "2.0"
+info:
+  description: "Bookstore RESTfull APIs"
+  version: "1.0.0"
+  title: "Ticket Management APIs"
+  contact:
+    email: "kittaporn.jp@gmail.com"
+host: "localhost:3000"
+basePath: "/"
+tags:
+- name: "Users"
+  description: "All you can do with users is here!"
+- name: "Authentication"
+  description: "Handle all authentication stuff here!"
+- name: "Books"
+  description: "All you can do with books is here!"
+schemes:
+- "http"
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+    description: "This will accept JWT token that came from login api"
+paths:
+  /users:
+    get:
+      tags:
+      - "Users"
+      summary: "Get logged in user information"
+      description: "This api will return you a bunch of user personal information and user's orders"
+      operationId: "getUserInfo"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      security:
+        - Bearer: []
+      responses:
+        200:
+          description: The returned data of logged in user
+          schema: 
+            $ref: '#/definitions/UserInformation'
+    post:
+      tags:
+      - "Users"
+      summary: "Create new user"
+      description: "This api will recieve user information and store it into database"
+      operationId: "CreateUser"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "The required parameters to create a new ticket as following"
+        required: true
+        schema:
+          $ref: "#/definitions/CreateUserData"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: OK
+    delete:
+      tags:
+      - "Users"
+      summary: "Delete user"
+      description: "This api will delete current logged in user"
+      operationId: "SeleteUser"
+      security:
+        - Bearer: []
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "The required parameters to delete current user as following"
+        required: true
+        schema:
+          $ref: "#/definitions/CreateUserData"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: OK
+  /users/order:
+    post:
+      tags:
+      - "Users"
+      summary: "Making order"
+      description: "This api will create a user's order"
+      operationId: "CreateOrder"
+      security:
+        - Bearer: []
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "The required parameters to create a new order as following"
+        required: true
+        schema:
+          $ref: "#/definitions/OrderData"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: OK
+  /login:
+    post:
+      tags:
+      - "Authentication"
+      summary: "User login"
+      description: "This api will authenticate the given username and password"
+      operationId: "UserLogin"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "The required parameters to log the user in as following"
+        required: true
+        schema:
+          $ref: "#/definitions/AuthData"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: OK
+  /logout:
+    get:
+      tags:
+      - "Authentication"
+      summary: "User logout"
+      description: "This api will log the user off"
+      operationId: "UserLogout"
+      security:
+        - Bearer: []
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: OK
+  /books:
+    get:
+      tags:
+      - "Books"
+      summary: "Get all books"
+      description: "This api will return you a list of all books"
+      operationId: "GetBooks"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      responses:
+        200:
+          description: OK
+          schema: 
+            $ref: '#/definitions/BooksData'
+            
+definitions:
+  BooksDataModel:
+    type: "object"
+    properties:
+      id:
+        type: "number"
+      price:
+        type: "number"
+      book_name:
+        type: "string"
+      is_recommended: 
+        type: "boolean"
+        example: true
+      author_name:
+        type: "string"
+        
+  BooksData:
+    type: "array"
+    items:
+      $ref: '#/definitions/BooksDataModel'
+    example:
+      - price: 495
+        author_name: "Kristin Hannah"
+        id: 4
+        book_name: "The Great Alone: A Novel Kristin Hannah"
+        is_recommended: true
+      - price: 897.96
+        author_name: "Gaz Oakley"
+        id: 7
+        book_name: "Vegan 100"
+        is_recommended: false
+  AuthData:
+    type: "object"
+    properties:
+      username:
+        type: "string"
+        example: "MarkWahlberg"
+      password:
+        type: "string"
+        example: "1212312121"
+  OrderData:
+    type: "object"
+    properties:
+      orders:
+        type: "array"
+        description: "Accept array of book ids"
+        items: 
+          type: integer
+        example:
+          - 1
+          - 4
+    
+  CreateUserData:
+    type: "object"
+    properties:
+      username:
+        type: "string"
+        example: "MarkWahlberg"
+      password:
+        type: "string"
+        example: "1212312121"
+      name:
+        type: "string"
+        example: "Mark"
+      surname:
+        type: "string"
+        example: "Wahlberg"
+      date_of_birth:
+        type: "string"
+        example: "1996-09-23"
+  UserInformation:
+    type: "object"
+    properties:
+      name:
+        type: "string"
+        example: "John"
+      surname:
+        type: "string"
+        example: "Wahlberg"
+      date_of_birth:
+        type: "string"
+        example: "1996-09-23"
+      books:
+        type: "array"
+        items: 
+          type: integer
+        example:
+          - 1
+          - 4
+      

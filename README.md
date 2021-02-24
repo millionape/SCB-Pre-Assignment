@@ -1,22 +1,23 @@
-## Learn using JWT with Passport authentication
+# SCB Pre Assignment Bookstore RESTfull APIs
 
-Requires [node.js](https://nodejs.org/en/) and [express.js](https://expressjs.com/) to run
+Hi! 🙏  first of all i'm not quite sure that what i have done is close to the requirement or not but i did what i think it is closest and if you have no idea how to look at it would be great if you take a look at the [API document](https://petstore.swagger.io/?url=https://raw.githubusercontent.com/millionape/SCB-Pre-Assignment/main/apidoc.yaml#/) first, thanks 😊.
 
-#### Directory Structrue
-```
-passport-jwt/
-    +-- configs
-    ¦    +-- passport.js
-    +-- routes
-    ¦    +-- auth.js
-    ¦    +-- users.js
-    +-- app.js
-    +-- package.json
+## ⚡️ Quick Start ⚡️
+
+  This project is made from Express so here's a few steps to do before we get in
+
+  Install dependencies:
+
+```bash
+$ npm install
 ```
 
-#### Test API
-#####  Install dependencies
-`$ yarn install` or  `$ npm install`
+  Start the server:
 
-#####  Start app
-`$ yarn start` or `$ npm start`
+```bash
+$ npm run start
+```
+
+  Base URL will be at: http://localhost:3000
+  
+  API document is here 👉  [API Document](https://petstore.swagger.io/?url=https://raw.githubusercontent.com/millionape/SCB-Pre-Assignment/main/apidoc.yaml#/)
