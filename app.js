@@ -2,7 +2,6 @@ const constant = require('./const/constant');
 
 const express = require('express'),
       app = express(),
-      passport = require('passport'),
       mongoose = require('mongoose'),
       port = process.env.PORT || 3000
       moment = require("moment")

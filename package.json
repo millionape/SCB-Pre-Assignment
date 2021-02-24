@@ -1,8 +1,10 @@
 {
-  "name": "passportjs",
+  "name": "scb_pre_assignment",
   "version": "1.0.0",
   "main": "app.js",
   "license": "MIT",
+  "description": "This is a Bookstore RESTfull APIs project",
+  "author": "Kittaphorn Janpheng",
   "dependencies": {
     "axios": "^0.21.1",
     "bcrypt": "^5.0.0",

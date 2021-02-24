@@ -1,12 +1,13 @@
-swagger: "2.0"
+openapi: "3.0.0"
 info:
   description: "Bookstore RESTfull APIs"
   version: "1.0.0"
   title: "Ticket Management APIs"
   contact:
     email: "kittaporn.jp@gmail.com"
-host: "localhost:3000"
-basePath: "/"
+servers:
+  - url: "http://localhost:3000"
+    description: "Your local server"
 tags:
 - name: "Users"
   description: "All you can do with users is here!"
@@ -14,50 +15,32 @@ tags:
   description: "Handle all authentication stuff here!"
 - name: "Books"
   description: "All you can do with books is here!"
-schemes:
-- "http"
-securityDefinitions:
-  Bearer:
-    type: apiKey
-    name: Authorization
-    in: header
-    description: "This will accept JWT token that came from login api"
+
 paths:
   /users:
     get:
       tags:
       - "Users"
       summary: "Get logged in user information"
-      description: "This api will return you a bunch of user personal information and user's orders"
+      description: "This api will return you a bunch of user personal information and user orders"
       operationId: "getUserInfo"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
       security:
-        - Bearer: []
+        - bearerAuth: []
       responses:
         200:
           description: The returned data of logged in user
-          schema: 
-            $ref: '#/definitions/UserInformation'
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/UserInformation'
     post:
       tags:
       - "Users"
       summary: "Create new user"
       description: "This api will recieve user information and store it into database"
       operationId: "CreateUser"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "The required parameters to create a new ticket as following"
-        required: true
-        schema:
-          $ref: "#/definitions/CreateUserData"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
+      requestBody:
+        $ref: "#/components/requestBodies/CreateUserDataBody"
       responses:
         200:
           description: OK
@@ -68,41 +51,21 @@ paths:
       description: "This api will delete current logged in user"
       operationId: "SeleteUser"
       security:
-        - Bearer: []
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "The required parameters to delete current user as following"
-        required: true
-        schema:
-          $ref: "#/definitions/CreateUserData"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
+        - bearerAuth: []
       responses:
         200:
           description: OK
-  /users/order:
+  /users/orders:
     post:
       tags:
       - "Users"
-      summary: "Making order"
+      summary: "Making an order"
       description: "This api will create a user's order"
       operationId: "CreateOrder"
       security:
-        - Bearer: []
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "The required parameters to create a new order as following"
-        required: true
-        schema:
-          $ref: "#/definitions/OrderData"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
+        - bearerAuth: []
+      requestBody:
+        $ref: "#/components/requestBodies/CreateOrderData"
       responses:
         200:
           description: OK
@@ -111,22 +74,16 @@ paths:
       tags:
       - "Authentication"
       summary: "User login"
-      description: "This api will authenticate the given username and password"
+      description: "This api will authenticate the given username and password and the token will be appear in response header"
       operationId: "UserLogin"
-      parameters:
-      - in: "body"
-        name: "body"
-        description: "The required parameters to log the user in as following"
-        required: true
-        schema:
-          $ref: "#/definitions/AuthData"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
+      requestBody:
+        $ref: "#/components/requestBodies/LoginDataBody"
       responses:
         200:
           description: OK
+          headers:
+            token:
+              $ref: '#/components/headers/token'
   /logout:
     get:
       tags:
@@ -135,11 +92,7 @@ paths:
       description: "This api will log the user off"
       operationId: "UserLogout"
       security:
-        - Bearer: []
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
+        - bearerAuth: []
       responses:
         200:
           description: OK
@@ -150,103 +103,138 @@ paths:
       summary: "Get all books"
       description: "This api will return you a list of all books"
       operationId: "GetBooks"
-      consumes:
-      - "application/json"
-      produces:
-      - "application/json"
       responses:
         200:
           description: OK
-          schema: 
-            $ref: '#/definitions/BooksData'
-            
-definitions:
-  BooksDataModel:
-    type: "object"
-    properties:
-      id:
-        type: "number"
-      price:
-        type: "number"
-      book_name:
+          content:
+            application/json:
+              schema: 
+                $ref: '#/components/schemas/BooksData'
+components:
+  securitySchemes:
+      bearerAuth:
+        type: http
+        scheme: bearer
+        bearerFormat: JWT 
+        description: "This will accept JWT token that generated from /login"
+  headers:
+    token:
+      description: "Generated JWT token"
+      schema:
         type: "string"
-      is_recommended: 
-        type: "boolean"
-        example: true
-      author_name:
-        type: "string"
-        
-  BooksData:
-    type: "array"
-    items:
-      $ref: '#/definitions/BooksDataModel'
-    example:
-      - price: 495
-        author_name: "Kristin Hannah"
-        id: 4
-        book_name: "The Great Alone: A Novel Kristin Hannah"
-        is_recommended: true
-      - price: 897.96
-        author_name: "Gaz Oakley"
-        id: 7
-        book_name: "Vegan 100"
-        is_recommended: false
-  AuthData:
-    type: "object"
-    properties:
-      username:
-        type: "string"
-        example: "MarkWahlberg"
-      password:
-        type: "string"
-        example: "1212312121"
-  OrderData:
-    type: "object"
-    properties:
-      orders:
-        type: "array"
-        description: "Accept array of book ids"
-        items: 
-          type: integer
-        example:
-          - 1
-          - 4
-    
-  CreateUserData:
-    type: "object"
-    properties:
-      username:
-        type: "string"
-        example: "MarkWahlberg"
-      password:
-        type: "string"
-        example: "1212312121"
-      name:
-        type: "string"
-        example: "Mark"
-      surname:
-        type: "string"
-        example: "Wahlberg"
-      date_of_birth:
-        type: "string"
-        example: "1996-09-23"
-  UserInformation:
-    type: "object"
-    properties:
-      name:
-        type: "string"
-        example: "John"
-      surname:
-        type: "string"
-        example: "Wahlberg"
-      date_of_birth:
-        type: "string"
-        example: "1996-09-23"
-      books:
-        type: "array"
-        items: 
-          type: integer
-        example:
-          - 1
-          - 4
-      
+      example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJib29rcyI6W10sIl9pZCI6IjYwMzY3MTE0YzBhNjQxMDJlYzZkNDA1MSIsInVzZXJuYW1lIjoiTWFya1dhaGxiZXJnIiwicGFzc3dvcmQiOiIkMmIkMTAkanBEd2lZMHJFLy5ZZThzUFFYU2tuTzJPRk5ZQkllREEvTGZBL0ZSSEw3U0IuN3ZNcHl1TEMiLCJuYW1lIjoiTWFyayIsInN1cm5hbWUiOiJXYWhsYmVyZyIsImRhdGVfb2ZfYmlydGgiOiIxOTk2LTA5LTIzIiwiX192IjowLCJpYXQiOjE2MTQxODA3NzgsImV4cCI6MTYxNDE4NDM3OH0.KCjJmGgdat_8mnMLQhAt2VKx-CCsYnSV1QtWMlRoV-g"
+  requestBodies:
+    CreateUserDataBody:
+      description: "The required parameters to create a new user as following"
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/CreateUserData"
+          example:
+            username: "MarkWahlberg"
+            password: "1212312121"
+            name: "Mark"
+            surname: "Wahlberg"
+            date_of_birth: "1996-09-23"
+    CreateOrderData:
+      description: "The required parameters to create a new order as following"
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/OrderData"
+          example:
+            orders: [1,4]
+    LoginDataBody:
+      description: "The required parameters to log the user in as following"
+      required: true
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/AuthData"
+          example:
+            username: "MarkWahlberg"
+            password: "1212312121"
+  schemas:
+    CreateUserData:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+          example: "MarkWahlberg"
+        password:
+          type: "string"
+          example: "1212312121"
+        name:
+          type: "string"
+          example: "Mark"
+        surname:
+          type: "string"
+          example: "Wahlberg"
+        date_of_birth:
+          type: "string"
+          example: "1996-09-23"
+    OrderData:
+      type: "object"
+      properties:
+        orders:
+          type: "array"
+          description: "Accept array of book ids"
+          items: 
+            type: integer
+            format: int64
+    AuthData:
+      type: "object"
+      properties:
+        username:
+          type: "string"
+        password:
+          type: "string"
+    BooksDataModel:
+      type: "object"
+      properties:
+        id:
+          type: "number"
+        price:
+          type: "number"
+        book_name:
+          type: "string"
+        is_recommended: 
+          type: "boolean"
+          example: true
+        author_name:
+          type: "string"
+    BooksData:
+      type: "array"
+      items:
+        $ref: '#/components/schemas/BooksDataModel'
+      example:
+        - price: 495
+          author_name: "Kristin Hannah"
+          id: 4
+          book_name: "The Great Alone: A Novel Kristin Hannah"
+          is_recommended: true
+        - price: 897.96
+          author_name: "Gaz Oakley"
+          id: 7
+          book_name: "Vegan 100"
+          is_recommended: false
+    UserInformation:
+      type: "object"
+      properties:
+        name:
+          type: "string"
+          example: "John"
+        surname:
+          type: "string"
+          example: "Wahlberg"
+        date_of_birth:
+          type: "string"
+          example: "1996-09-23"
+        books:
+          type: "array"
+          items: 
+            type: integer
+            format: int64
+          example: [1,4]
