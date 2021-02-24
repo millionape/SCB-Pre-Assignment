@@ -2,30 +2,13 @@ const passport = require('passport'),
   passportJWT = require("passport-jwt"),
   ExtractJWT = passportJWT.ExtractJwt,
   JWTStrategy = passportJWT.Strategy,
-  LocalStrategy = require('passport-local').Strategy
-User = require('../models/user');
-
-passport.use(new LocalStrategy({
-    usernameField: 'username',
-    passwordField: 'password'
-  },
-  (username, password, cb) => {
-
-    //this one is typically a DB call.
-    if (username !== user.username)
-      return cb(null, false, {
-        message: 'Incorrect username or password.'
-      })
-
-    return cb(null, user, {
-      message: 'Logged In Successfully'
-    })
-  }
-));
+  // LocalStrategy = require('passport-local').Strategy,
+  User = require('../models/user'),
+  constant = require('../const/constant')
 
 passport.use(new JWTStrategy({
     jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
-    secretOrKey: 'your_jwt_secret'
+    secretOrKey: constant.jwt_secret
   },
   (jwtPayload, cb) => {
     try {

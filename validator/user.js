@@ -42,6 +42,24 @@ const userDataValidate = (req, res, next) => {
     }
 }
 
+const ordersParamsValidate = (req, res, next) => {
+    var constraints = {
+        orders: {
+            presence: true,
+            type: "array"
+        }
+    };
+    let validateResult = validate(req.body, constraints);
+    if(validate(req.body, constraints)){
+        res.status(400).json({
+            errors: validateResult
+        })
+    }else{
+        return next()
+    }
+}
+
 module.exports = {
     userDataValidate,
+    ordersParamsValidate,
 }

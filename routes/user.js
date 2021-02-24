@@ -1,13 +1,11 @@
 const router = require('express').Router()
-
-/* GET users listing. */
-router.get('/', (req, res, next) => {
-  res.send('respond with a resource');
-});
-
-/* GET user profile. */
-router.get('/profile', (req, res, next)  => {
-  res.send(req.user);
-});
+const passport = require('passport')
+const userController = require('../controllers/userController');
+const dataValidator = require("../validator/user");
+/** /users router */
+router.get('/',passport.authenticate('jwt', {session: false}), userController.getUserInfo);
+router.delete('/',passport.authenticate('jwt', {session: false}), userController.deleteCurrentUser);
+router.post('/',dataValidator.userDataValidate,userController.signup);
+router.post('/orders',passport.authenticate('jwt', {session: false}),dataValidator.ordersParamsValidate, userController.makingOrders);
 
 module.exports = router;

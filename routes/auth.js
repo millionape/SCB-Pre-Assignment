@@ -1,8 +1,7 @@
 const router = require('express').Router(),
       authenticationController = require('../controllers/authController');
-      userDataValidator = require("../validator/user");
 
-router.post('/signup',userDataValidator.userDataValidate, authenticationController.signup);
+/** /auth router */
 router.post('/login', authenticationController.signin);
 router.get('/logout', authenticationController.signout);
 

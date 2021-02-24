@@ -23,8 +23,12 @@ var UserSchema = new Schema({
     date_of_birth: {
         type: String,
         required: true,
+    },
+    books: {
+        type: Array,
+        required: false,
     }
-});
+},{ strict: false });
 
 UserSchema.methods.comparePassword = function (passw, cb) {
     bcrypt.compare(passw, this.password, function (err, isMatch) {
